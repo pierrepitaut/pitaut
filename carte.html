@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Carte Interactive des Pays</title>
+    <title>Carte Interactive des Pays avec Surbrillance</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         #mapid { height: 600px; }
@@ -11,14 +11,51 @@
     <div id="mapid"></div>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        var map = L.map('mapid').setView([20, 0], 2); // Centre la carte et définit le niveau de zoom
+        var map = L.map('mapid').setView([20, 0], 2);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Ajoutez ici votre code pour intégrer les données GeoJSON et gérer les clics sur les pays
+        // Fonction pour changer le style lors du survol
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 5,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+        }
+
+        // Fonction pour réinitialiser le style après le survol
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+        }
+
+        // Fonction pour attacher les gestionnaires d'événements à la couche GeoJSON
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                // click: zoomToFeature // Vous pouvez également ajouter une fonction pour gérer les clics ici
+            });
+        }
+
+        // Exemple de données GeoJSON pour un pays (ajoutez vos propres données)
+        var geojsonFeature = {
+            // Ajoutez ici vos données GeoJSON
+        };
+
+        var geojson = L.geoJson(geojsonFeature, {
+            onEachFeature: onEachFeature
+        }).addTo(map);
     </script>
 </body>
 </html>
